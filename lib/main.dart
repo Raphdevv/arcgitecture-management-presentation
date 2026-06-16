@@ -1,15 +1,15 @@
-import 'package:architecture_management_data/architecture_management_data.dart';
-import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-final GetIt sl = GetIt.asNewInstance();
+import 'features/notes/presentation/bloc/notes_bloc.dart';
+import 'features/notes/presentation/bloc/notes_event.dart';
+import 'features/notes/presentation/pages/notes_page.dart';
+import 'injection_container.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await setupArchitectureManagementInjector(sl: sl);
+  await setupInjector();
   await sl.allReady();
-
   runApp(const MyApp());
 }
 
@@ -18,56 +18,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+    return CupertinoApp(
+      title: 'Notes',
+      theme: const CupertinoThemeData(brightness: Brightness.light),
+      debugShowCheckedModeBanner: false,
+      home: BlocProvider(
+        create: (_) => sl<NotesBloc>()..add(LoadNotes()),
+        child: const NotesPage(),
       ),
     );
   }
